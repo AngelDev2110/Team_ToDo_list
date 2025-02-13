@@ -1,47 +1,54 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+<script>
+import { API } from "./lib/supabaseClient";
+export default {
+  methods: {
+    handleLogin: async () => {
+      try {
+        const { error } = await API.auth.signInWithPassword({
+          email: "exampleEmail@email.com",
+          password: "examplePassword",
+        });
+        if (error) throw error;
+        alert("Loggeo exitoso!");
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    handleLogout: async () => {
+      try {
+        const { error } = await API.auth.signOut();
+        if (error) throw error;
+        alert("Logout exitoso!");
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
+  <main class="container">
+    <button @click="handleLogin">Iniciar Sesión</button>
+    <button @click="handleLogout">Cerrar sesión</button>
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+<style scoped lang="sass">
+.container
+  display: flex
+  justify-content: center
+  align-items: center
+button
+  cursor: pointer
+  padding: 10px 20px
+  margin: 10px
+  border: none
+  border-radius: 5px
+  background-color: #007bff
+  color: white
+  font-size: 16px
+  transition: background-color 0.3s
+  &:hover
+    background-color: #0056b3
 </style>
