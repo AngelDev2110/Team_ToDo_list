@@ -1,54 +1,30 @@
 <script>
-import { API } from "./lib/supabaseClient";
+import { Transition } from "vue";
+import { RouterView } from "vue-router";
+
 export default {
-  methods: {
-    handleLogin: async () => {
-      try {
-        const { error } = await API.auth.signInWithPassword({
-          email: "exampleEmail@email.com",
-          password: "examplePassword",
-        });
-        if (error) throw error;
-        alert("Loggeo exitoso!");
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    handleLogout: async () => {
-      try {
-        const { error } = await API.auth.signOut();
-        if (error) throw error;
-        alert("Logout exitoso!");
-      } catch (error) {
-        console.error(error);
-      }
-    },
+  name: "App",
+  components: {
+    Transition,
+    RouterView,
   },
 };
 </script>
 
 <template>
-  <main class="container">
-    <button @click="handleLogin">Iniciar Sesión</button>
-    <button @click="handleLogout">Cerrar sesión</button>
+  <main>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </main>
 </template>
 
-<style scoped lang="sass">
-.container
-  display: flex
-  justify-content: center
-  align-items: center
-button
-  cursor: pointer
-  padding: 10px 20px
-  margin: 10px
-  border: none
-  border-radius: 5px
-  background-color: #007bff
-  color: white
-  font-size: 16px
-  transition: background-color 0.3s
-  &:hover
-    background-color: #0056b3
+<style lang="sass">
+.fade-enter-active, .fade-leave-active
+  transition: opacity 0.5s
+
+.fade-enter-from, .fade-leave-to
+  opacity: 0
 </style>
