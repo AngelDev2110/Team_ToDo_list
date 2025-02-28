@@ -1,14 +1,21 @@
-// router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+import { API } from "@/lib/supabaseClient";
 
 const Login = () => import("@/views/Login.vue");
 const NotFound = () => import("@/views/NotFound.vue");
+const Dashboard = () => import("@/views/Dashboard.vue");
 
 const routes = [
   {
     path: "/",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    meta: { requiresAuth: true },
   },
   {
     path: "/:pathMatch(.*)*",
@@ -25,13 +32,22 @@ const router = createRouter({
   },
 });
 
-//TODO: AUTH validation
-// router.beforeEach((to, from, next) => {
-//   if (to.meta.requiresAuth && !userIsAuthenticated()) {
-//     next({ name: "Login" });
-//   } else {
-//     next();
-//   }
-// });
+const isAuthenticated = async () => {
+  try {
+    const { data } = await API.auth.getUser();
+    return data?.user ? true : false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+router.beforeEach(async (to, from, next) => {
+  const isValidUser = await isAuthenticated();
+
+  if (to.name === "Login" && isValidUser) next({ name: "Dashboard" });
+  else if (to.meta.requiresAuth && !isValidUser) next({ name: "Login" });
+  else next();
+});
 
 export default router;

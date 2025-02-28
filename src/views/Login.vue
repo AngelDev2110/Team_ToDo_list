@@ -45,6 +45,7 @@ import { Form, Field } from "vee-validate";
 import * as yup from "yup";
 import { Button, InputText, Password, Card } from "primevue";
 import { API } from "@/lib/supabaseClient";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Login",
@@ -68,9 +69,13 @@ export default {
           .min(6, "La contraseña debe tener al menos 6 caracteres")
           .required("La contraseña es requerida"),
       }),
+      router: useRouter(),
     };
   },
   methods: {
+    navigateToDashboard() {
+      this.router.push({ name: "Dashboard" });
+    },
     async onSubmit(values) {
       const { email, password } = values;
       const { error } = await API.auth.signInWithPassword({ email, password });
@@ -78,8 +83,7 @@ export default {
         console.error(error);
         alert("Error al iniciar sesión: " + error.message);
       } else {
-        alert("¡Loggeo exitoso!");
-        // this.$router.push({ name: "Home" });
+        this.navigateToDashboard();
       }
     },
   },
