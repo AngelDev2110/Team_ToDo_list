@@ -1,8 +1,12 @@
 <template>
   <div class="menubarContainer">
     <Menubar :model="items" />
+    <div class="topActions">
+      <UsersSelect v-model="selectedUser" />
+      <Button type="button" icon="pi pi-plus" text />
+    </div>
     <Table
-      :getData="getTasks"
+      :getData="() => getTasks(userParam)"
       :onEditRow="() => {}"
       :onDeleteRow="() => {}"
       header="Tasks"
@@ -24,14 +28,18 @@
 </template>
 
 <script setup>
-import { Menubar, Column, Tag } from "primevue";
-import { ref } from "vue";
+import { Button, Menubar, Column, Tag } from "primevue";
+import { computed, ref } from "vue";
 import { API } from "@/lib/supabaseClient";
 import { useRouter } from "vue-router";
 import { getTasks, createTask } from "@/lib/tasks";
-import { Table } from "@/components";
+import { Table, UsersSelect } from "@/components";
 
 const router = useRouter();
+const selectedUser = ref(null);
+const userParam = computed(() =>
+  selectedUser.value ? { name: "user_id", value: selectedUser.value } : {}
+);
 
 const logout = async () => {
   try {
@@ -56,5 +64,10 @@ const items = ref([
 .menubarContainer
   padding: 1rem
 .table
+  margin-top: 1rem
+.topActions
+  display: flex
+  justify-content: space-between
+  align-items: center
   margin-top: 1rem
 </style>

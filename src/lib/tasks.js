@@ -9,11 +9,20 @@ export const createTask = async (task) => {
   }
 };
 
-export const getTasks = async () => {
+export const getTasks = async (param) => {
   try {
-    const { data: tasks, error } = await API.from("tasks").select("*");
-    if (error) throw error;
-    return tasks;
+    const { name, value } = param;
+    if (name && value) {
+      const { data: tasks, error } = await API.from("tasks")
+        .select("*")
+        .eq(name, value);
+      if (error) throw error;
+      return tasks;
+    } else {
+      const { data: tasks, error } = await API.from("tasks").select("*");
+      if (error) throw error;
+      return tasks;
+    }
   } catch (error) {
     console.error(error);
     return [];
