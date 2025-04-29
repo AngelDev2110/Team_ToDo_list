@@ -2,6 +2,7 @@
   <Dialog
     v-model:visible="visible"
     modal
+    :closable="!isLoading"
     :header="props.header"
     :style="{ minWidth: '25rem' }"
   >
@@ -11,48 +12,57 @@
         type="button"
         label="Cancel"
         severity="secondary"
+        :disabled="isLoading"
         @click="handleCancel"
-      ></Button>
-      <Button type="button" label="Save" @click="handleSave"></Button>
+      />
+      <Button
+        type="button"
+        label="Save"
+        :disabled="isLoading"
+        @click="handleSave"
+      />
     </div>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed, defineProps, defineEmits, ref } from "vue";
 import { Dialog, Button } from "primevue";
 
 const props = defineProps({
-  visible: Boolean,
+  modelValue: Boolean,
   header: String,
   on_cancel: Function,
   on_save: Function,
 });
 
-const visible = ref(props.visible);
-const emit = defineEmits(["update:visible"]);
+const emit = defineEmits(["update:modelValue"]);
+
+const isLoading = ref(false);
+
+const visible = computed({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
+
 const handleCancel = async () => {
   try {
-    await props.on_cancel();
+    await props.on_cancel?.();
     visible.value = false;
   } catch (error) {}
 };
 
 const handleSave = async () => {
   try {
-    await props.on_save();
+    isLoading.value = true;
+    await props.on_save?.();
     visible.value = false;
   } catch (error) {}
+  isLoading.value = false;
 };
-
-watch(props.visible, (newValue) => {
-  visible.value = newValue;
-  emit("update:visible", newValue);
-});
 </script>
 
 <style lang="sass">
-
 .buttonsContainer
   display: flex
   justify-content: flex-end

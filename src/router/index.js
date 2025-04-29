@@ -35,7 +35,6 @@ const router = createRouter({
 const isAuthenticated = async () => {
   try {
     const { data } = await API.auth.getUser();
-    console.log(data);
     return data?.user ? true : false;
   } catch (error) {
     console.error(error);

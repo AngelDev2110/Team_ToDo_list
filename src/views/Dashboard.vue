@@ -3,7 +3,12 @@
     <Menubar :model="items" />
     <div class="topActions">
       <UsersSelect v-model="selectedUser" />
-      <Button type="button" icon="pi pi-plus" text />
+      <Button
+        type="button"
+        icon="pi pi-plus"
+        text
+        @click="() => (isModalAddTaskVisible = true)"
+      />
     </div>
     <Table
       :getData="() => getTasks(userParam)"
@@ -11,6 +16,7 @@
       :onDeleteRow="() => {}"
       header="Tasks"
       class="table"
+      reloadEvent="reloadTasksTable"
     >
       <template #columns>
         <Column field="title" header="Title" />
@@ -24,17 +30,21 @@
         <Column field="due_date" header="Due Date" />
       </template>
     </Table>
+    <ModalAddTask v-model="isModalAddTaskVisible" />
   </div>
 </template>
 
 <script setup>
+//TODO: add reload table after add task
 import { Button, Menubar, Column, Tag } from "primevue";
 import { computed, ref } from "vue";
 import { API } from "@/lib/supabaseClient";
 import { useRouter } from "vue-router";
-import { getTasks, createTask } from "@/lib/tasks";
+import { getTasks } from "@/lib/tasks";
 import { Table, UsersSelect } from "@/components";
+import ModalAddTask from "@/components/ModalAddTask.vue";
 
+const isModalAddTaskVisible = ref(false);
 const router = useRouter();
 const selectedUser = ref(null);
 const userParam = computed(() =>

@@ -2,7 +2,7 @@ import { API } from "./supabaseClient";
 
 export const createTask = async (task) => {
   try {
-    const { error } = await API.from("tasks").insert([task]);
+    const { error } = await API.from("tasks").insert(task);
     if (error) throw error;
   } catch (error) {
     console.error(error);
