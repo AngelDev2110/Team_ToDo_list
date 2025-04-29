@@ -76,12 +76,21 @@ import {
 } from "primevue";
 import { defineProps, onMounted, ref } from "vue";
 import { FilterMatchMode } from "@primevue/core/api";
+import emitter from "@/utils/emits/globalEmitter";
 
 const props = defineProps({
   header: String,
   getData: Function,
   onDeleteRow: Function,
   onEditRow: Function,
+  reloadEvent: {
+    type: String,
+    default: "doNotReloadTable",
+  },
+});
+
+emitter.on(props.reloadEvent, () => {
+  onGetData();
 });
 
 const data = ref([]);
