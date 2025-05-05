@@ -28,3 +28,24 @@ export const getTasks = async (param) => {
     return [];
   }
 };
+
+export const editTask = async (id, updatedFields) => {
+  try {
+    const { error } = await API.from("tasks")
+      .update(updatedFields)
+      .eq("id", id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteTask = async (id) => {
+  try {
+    const { error } = await API.from("tasks").delete().eq("id", id);
+    if (error) throw error;
+  } catch (error) {
+    console.error(error);
+  }
+};
