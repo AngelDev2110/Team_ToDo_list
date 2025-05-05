@@ -1,7 +1,7 @@
 <template>
   <Modal
     v-model:visible="visible"
-    header="Agregar Tarea"
+    :header="modalTitle"
     :on_save="handleSave"
     :on_cancel="handleCancel"
   >
@@ -44,9 +44,10 @@
 
         <div class="field">
           <label for="due_date">Fecha de Vencimiento</label>
-          <Field name="due_date" v-slot="{ field }">
+          <Field name="due_date" v-slot="{ field, value }">
             <DatePicker
               v-bind="field"
+              :model-value="value"
               id="due_date"
               :disabled="isLoading"
               dateFormat="yy-mm-dd"
@@ -81,13 +82,13 @@
 
 <script setup>
 import emitter from "@/utils/emits/globalEmitter";
-import { computed, defineProps, defineEmits, ref } from "vue";
+import { computed, defineProps, defineEmits, ref, watch, nextTick } from "vue";
 import Modal from "./Modal.vue";
 import UsersSelect from "./UsersSelect.vue";
 import { Checkbox, DatePicker, InputText, Textarea } from "primevue";
 import { Form, Field } from "vee-validate";
 import * as yup from "yup";
-import { createTask } from "@/lib/tasks";
+import { createTask, editTask } from "@/lib/tasks";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -97,11 +98,15 @@ const props = defineProps({
 const addTaskFormRef = ref(null);
 const isLoading = ref(false);
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "clearTask"]);
 
 const visible = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
+});
+
+const modalTitle = computed(() => {
+  return props.task ? "Editar Tarea" : "Agregar Tarea";
 });
 
 const schema = yup.object({
@@ -129,7 +134,8 @@ const handleCancel = () => {
 const onSubmit = async (values) => {
   try {
     isLoading.value = true;
-    await createTask(values);
+    if (props.task) await editTask(props.task.id, values);
+    else await createTask(values);
     emitter.emit("reloadTasksTable");
   } catch (error) {
     console.error(error);
@@ -137,6 +143,29 @@ const onSubmit = async (values) => {
   visible.value = false;
   isLoading.value = false;
 };
+
+watch(visible, async (newValue) => {
+  if (newValue && props.task) {
+    await nextTick();
+
+    if (addTaskFormRef.value) {
+      console.log(props.task);
+      addTaskFormRef.value.setValues({
+        title: props.task.title || "",
+        description: props.task.description || "",
+        due_date: props.task.due_date || null,
+        is_completed: props.task.is_completed ?? false,
+        user_id: props.task.user_id || "",
+      });
+    }
+  }
+
+  if (!newValue) {
+    await nextTick();
+    addTaskFormRef.value?.resetForm();
+    emit("clearTask");
+  }
+});
 </script>
 
 <style scoped lang="sass">

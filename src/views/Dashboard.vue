@@ -12,7 +12,7 @@
     </div>
     <Table
       :getData="() => getTasks(userParam)"
-      :onEditRow="() => {}"
+      :onEditRow="onEditRow"
       :onDeleteRow="() => {}"
       header="Tasks"
       class="table"
@@ -30,7 +30,11 @@
         <Column field="due_date" header="Due Date" />
       </template>
     </Table>
-    <ModalAddTask v-model="isModalAddTaskVisible" />
+    <ModalAddTask
+      v-model="isModalAddTaskVisible"
+      :task="selectedTask"
+      @clearTask="clearSelectedTask"
+    />
   </div>
 </template>
 
@@ -47,6 +51,7 @@ import ModalAddTask from "@/components/ModalAddTask.vue";
 const isModalAddTaskVisible = ref(false);
 const router = useRouter();
 const selectedUser = ref(null);
+const selectedTask = ref(null);
 const userParam = computed(() =>
   selectedUser.value ? { name: "user_id", value: selectedUser.value } : {}
 );
@@ -68,6 +73,15 @@ const items = ref([
     command: logout,
   },
 ]);
+
+const clearSelectedTask = () => {
+  selectedTask.value = null;
+};
+
+const onEditRow = (data) => {
+  selectedTask.value = data;
+  isModalAddTaskVisible.value = true;
+};
 </script>
 
 <style lang="sass" scoped>
