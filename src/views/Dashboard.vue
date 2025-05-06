@@ -13,7 +13,7 @@
     <Table
       :getData="() => getTasks(userParam)"
       :onEditRow="onEditRow"
-      :onDeleteRow="() => {}"
+      :onDeleteRow="onDeleteRow"
       header="Tasks"
       class="table"
       reloadEvent="reloadTasksTable"
@@ -35,6 +35,11 @@
       :task="selectedTask"
       @clearTask="clearSelectedTask"
     />
+    <ModalConfirmDelete
+      v-model="isModalDeleteTaskVisible"
+      :task="selectedTask"
+      @clearTask="clearSelectedTask"
+    />
   </div>
 </template>
 
@@ -47,8 +52,10 @@ import { useRouter } from "vue-router";
 import { getTasks } from "@/lib/tasks";
 import { Table, UsersSelect } from "@/components";
 import ModalAddTask from "@/components/ModalAddTask.vue";
+import ModalConfirmDelete from "@/components/ModalConfirmDelete.vue";
 
 const isModalAddTaskVisible = ref(false);
+const isModalDeleteTaskVisible = ref(false);
 const router = useRouter();
 const selectedUser = ref(null);
 const selectedTask = ref(null);
@@ -81,6 +88,11 @@ const clearSelectedTask = () => {
 const onEditRow = (data) => {
   selectedTask.value = data;
   isModalAddTaskVisible.value = true;
+};
+
+const onDeleteRow = (data) => {
+  selectedTask.value = data;
+  isModalDeleteTaskVisible.value = true;
 };
 </script>
 
