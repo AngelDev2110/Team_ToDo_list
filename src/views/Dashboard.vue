@@ -2,7 +2,7 @@
   <div class="menubarContainer">
     <Menubar :model="items" />
     <div class="topActions">
-      <UsersSelect v-model="selectedUser" />
+      <UsersSelect v-if="userRole == 'team_leader'" v-model="selectedUser" />
       <Button
         type="button"
         icon="pi pi-plus"
@@ -46,6 +46,7 @@
 <script setup>
 //TODO: add reload table after add task
 import { Button, Menubar, Column, Tag } from "primevue";
+import Cookies from "js-cookie";
 import { computed, ref } from "vue";
 import { API } from "@/lib/supabaseClient";
 import { useRouter } from "vue-router";
@@ -59,15 +60,30 @@ const isModalDeleteTaskVisible = ref(false);
 const router = useRouter();
 const selectedUser = ref(null);
 const selectedTask = ref(null);
-const userParam = computed(() =>
-  selectedUser.value ? { name: "user_id", value: selectedUser.value } : {}
-);
+const userParam = computed(() => {
+  if (userRole.value == "team_leader") {
+    return selectedUser.value
+      ? { name: "user_id", value: selectedUser.value }
+      : {};
+  }
+  const cookie = Cookies.get("ud");
+  const userId = cookie ? JSON.parse(cookie).id : null;
+  return userId ? { name: "user_id", value: userId } : {};
+});
+const userRole = computed(() => {
+  const cookie = Cookies.get("ud");
+  const role = cookie ? JSON.parse(cookie).role : null;
+  return role;
+});
 
 const logout = async () => {
   try {
     const { error } = await API.auth.signOut();
     if (error) console.error("Error logging out:", error.message);
-    else router.push({ name: "Login" });
+    else {
+      Cookies.remove("ud");
+      router.push({ name: "Login" });
+    }
   } catch (error) {
     console.error("Error logging out:", error);
   }

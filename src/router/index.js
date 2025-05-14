@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { API } from "@/lib/supabaseClient";
+import Cookies from "js-cookie";
 
 const Login = () => import("@/views/Login.vue");
 const NotFound = () => import("@/views/NotFound.vue");
@@ -34,8 +35,9 @@ const router = createRouter({
 
 const isAuthenticated = async () => {
   try {
-    const { data } = await API.auth.getUser();
-    return data?.user ? true : false;
+    const seesionCookie = Cookies.get("ud");
+    const { role, email, id } = JSON.parse(seesionCookie);
+    return role && email && id;
   } catch (error) {
     console.error(error);
     return false;

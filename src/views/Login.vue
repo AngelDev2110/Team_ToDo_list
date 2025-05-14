@@ -46,6 +46,7 @@ import * as yup from "yup";
 import { Button, InputText, Password, Card } from "primevue";
 import { API } from "@/lib/supabaseClient";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
 
 export default {
   name: "Login",
@@ -78,11 +79,23 @@ export default {
     },
     async onSubmit(values) {
       const { email, password } = values;
-      const { error } = await API.auth.signInWithPassword({ email, password });
+      const { data, error } = await API.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) {
         console.error(error);
         alert("Error al iniciar sesión: " + error.message);
       } else {
+        const id = data?.user?.id;
+        const role = data?.user?.user_metadata?.rol;
+        const email = data?.user?.email;
+        const userData = JSON.stringify({
+          id,
+          email,
+          role,
+        });
+        Cookies.set("ud", userData, { expires: 1 });
         this.navigateToDashboard();
       }
     },
