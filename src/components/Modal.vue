@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits, ref } from "vue";
+import { computed, ref } from "vue";
 import { Dialog, Button } from "primevue";
 
 const props = defineProps({

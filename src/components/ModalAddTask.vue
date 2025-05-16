@@ -8,7 +8,7 @@
     <Form
       @submit="onSubmit"
       ref="addTaskFormRef"
-      :validation-schema="schema"
+      :validation-schema="actualSchema"
       v-slot="{ errors, handleSubmit }"
       :initial-values="{ is_completed: false }"
     >
@@ -58,7 +58,7 @@
           <small class="p-error">{{ errors.due_date }}</small>
         </div>
 
-        <div class="field">
+        <div v-if="userRole == 'team_leader'" class="field">
           <Field name="user_id" v-slot="{ field }">
             <label for="user_id">Usuario</label>
             <UsersSelect v-bind="field" :disabled="isLoading" id="user_id" />
@@ -82,13 +82,14 @@
 
 <script setup>
 import emitter from "@/utils/emits/globalEmitter";
-import { computed, defineProps, defineEmits, ref, watch, nextTick } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import Modal from "./Modal.vue";
 import UsersSelect from "./UsersSelect.vue";
 import { Checkbox, DatePicker, InputText, Textarea } from "primevue";
 import { Form, Field } from "vee-validate";
 import * as yup from "yup";
 import { createTask, editTask } from "@/lib/tasks";
+import Cookies from "js-cookie";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -112,9 +113,22 @@ const modalTitle = computed(() => {
 const schema = yup.object({
   title: yup.string().required("El título es obligatorio"),
   description: yup.string().required("La descripción es obligatoria"),
-  due_date: yup.date().nullable().required("La fecha es obligatoria"),
+  due_date: yup
+    .date("Fecha inválida")
+    .nullable()
+    .required("La fecha es obligatoria"),
   is_completed: yup.boolean().default(false),
   user_id: yup.string().required("El usuario es obligatorio"),
+});
+
+const memberSchema = yup.object({
+  title: yup.string().required("El título es obligatorio"),
+  description: yup.string().required("La descripción es obligatoria"),
+  due_date: yup
+    .date("Fecha inválida")
+    .nullable()
+    .required("La fecha es obligatoria"),
+  is_completed: yup.boolean().default(false),
 });
 
 const handleSave = async () => {
@@ -131,11 +145,25 @@ const handleCancel = () => {
   visible.value = false;
 };
 
+const userRole = computed(() => {
+  const cookie = Cookies.get("ud");
+  const role = cookie ? JSON.parse(cookie).role : null;
+  return role;
+});
+
+const actualSchema = computed(() => {
+  return userRole.value === "team_leader" ? schema : memberSchema;
+});
+
 const onSubmit = async (values) => {
   try {
     isLoading.value = true;
-    if (props.task) await editTask(props.task.id, values);
-    else await createTask(values);
+    const cookie = Cookies.get("ud");
+    const user_id = cookie ? JSON.parse(cookie).id : null;
+    const payload =
+      userRole === "team_leader" ? values : { ...values, user_id };
+    if (props.task) await editTask(props.task.id, payload);
+    else await createTask(payload);
     emitter.emit("reloadTasksTable");
   } catch (error) {
     console.error(error);
@@ -149,7 +177,6 @@ watch(visible, async (newValue) => {
     await nextTick();
 
     if (addTaskFormRef.value) {
-      console.log(props.task);
       addTaskFormRef.value.setValues({
         title: props.task.title || "",
         description: props.task.description || "",

@@ -4,6 +4,7 @@
     <div class="topActions">
       <UsersSelect v-if="userRole == 'team_leader'" v-model="selectedUser" />
       <Button
+        class="p-button-success"
         type="button"
         icon="pi pi-plus"
         text
@@ -122,4 +123,6 @@ const onDeleteRow = (data) => {
   justify-content: space-between
   align-items: center
   margin-top: 1rem
+  .p-button-success
+    margin-left: auto
 </style>

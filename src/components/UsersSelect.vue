@@ -12,15 +12,7 @@
 
 <script setup>
 import { Select } from "primevue";
-import {
-  useAttrs,
-  onMounted,
-  ref,
-  computed,
-  watch,
-  defineProps,
-  defineEmits,
-} from "vue";
+import { useAttrs, onMounted, ref, computed, watch } from "vue";
 import { getAllUsers } from "@/lib/users";
 
 const props = defineProps({

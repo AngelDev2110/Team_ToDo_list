@@ -74,7 +74,7 @@ import {
   InputIcon,
   InputText,
 } from "primevue";
-import { defineProps, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { FilterMatchMode } from "@primevue/core/api";
 import emitter from "@/utils/emits/globalEmitter";
 
