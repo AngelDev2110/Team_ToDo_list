@@ -161,7 +161,7 @@ const onSubmit = async (values) => {
     const cookie = Cookies.get("ud");
     const user_id = cookie ? JSON.parse(cookie).id : null;
     const payload =
-      userRole === "team_leader" ? values : { ...values, user_id };
+      userRole.value === "team_leader" ? values : { ...values, user_id };
     if (props.task) await editTask(props.task.id, payload);
     else await createTask(payload);
     emitter.emit("reloadTasksTable");
