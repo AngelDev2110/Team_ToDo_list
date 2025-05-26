@@ -80,13 +80,13 @@ const userRole = computed(() => {
 const logout = async () => {
   try {
     const { error } = await API.auth.signOut();
-    if (error) console.error("Error logging out:", error.message);
+    if (error) console.error("Error logging out");
     else {
       Cookies.remove("ud");
       router.push({ name: "Login" });
     }
   } catch (error) {
-    console.error("Error logging out:", error);
+    console.error("Error logging out");
   }
 };
 

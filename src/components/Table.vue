@@ -105,7 +105,7 @@ const onGetData = async () => {
     const _data = await props.getData();
     data.value = _data;
   } catch (error) {
-    console.error(error);
+    console.error("error al obtener los datos");
   }
   loading.value = false;
 };

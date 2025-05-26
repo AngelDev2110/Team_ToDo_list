@@ -84,8 +84,7 @@ export default {
         password,
       });
       if (error) {
-        console.error(error);
-        alert("Error al iniciar sesión: " + error.message);
+        alert("Error al iniciar sesión, por favor verifica tus credenciales.");
       } else {
         const id = data?.user?.id;
         const role = data?.user?.user_metadata?.rol;

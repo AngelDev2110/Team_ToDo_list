@@ -39,7 +39,7 @@ const isAuthenticated = async () => {
     const { role, email, id } = JSON.parse(seesionCookie);
     return role && email && id;
   } catch (error) {
-    console.error(error);
+    console.error("error autenticando");
     return false;
   }
 };

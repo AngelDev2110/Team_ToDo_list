@@ -5,7 +5,7 @@ export const createTask = async (task) => {
     const { error } = await API.from("tasks").insert(task);
     if (error) throw error;
   } catch (error) {
-    console.error(error);
+    console.error("error creando task");
   }
 };
 
@@ -24,7 +24,7 @@ export const getTasks = async (param) => {
       return tasks;
     }
   } catch (error) {
-    console.error(error);
+    console.error("error obteniendo task");
     return [];
   }
 };
@@ -37,7 +37,7 @@ export const editTask = async (id, updatedFields) => {
 
     if (error) throw error;
   } catch (error) {
-    console.error(error);
+    console.error("error editando task");
   }
 };
 
@@ -46,6 +46,6 @@ export const deleteTask = async (id) => {
     const { error } = await API.from("tasks").delete().eq("id", id);
     if (error) throw error;
   } catch (error) {
-    console.error(error);
+    console.error("error eliminando task");
   }
 };

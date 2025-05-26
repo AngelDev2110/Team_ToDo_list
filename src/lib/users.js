@@ -6,6 +6,6 @@ export async function getAllUsers() {
     if (error) throw error;
     return data?.users;
   } catch (error) {
-    console.error("Error obteniendo usuarios:", error);
+    console.error("Error obteniendo usuarios");
   }
 }

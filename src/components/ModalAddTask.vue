@@ -137,7 +137,7 @@ const handleSave = async () => {
     if (valid) await onSubmit(addTaskFormRef.value.values);
     else console.error("Formulario inválido");
   } catch (error) {
-    console.error(error);
+    console.error("Error en formulario");
   }
 };
 
@@ -166,7 +166,7 @@ const onSubmit = async (values) => {
     else await createTask(payload);
     emitter.emit("reloadTasksTable");
   } catch (error) {
-    console.error(error);
+    console.error("Error al guardar la tarea");
   }
   visible.value = false;
   isLoading.value = false;
